@@ -10,6 +10,7 @@ const LandingPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [creatinine, setCreatinine] = useState('');
 
   const handleNiftiClick = () => {
     niftiInputRef.current?.click();
@@ -18,15 +19,43 @@ const LandingPage = () => {
   const handleNiftiChange = (event) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      const fileList = Array.from(files).map(file => file.name);
-      setUploadedFiles(fileList);
-      console.log('Files selected:', files.length);
-      // Process files (NIfTI or DICOM)
+      const fileArray = Array.from(files);
+      setUploadedFiles(fileArray);
+      console.log('Files selected:', fileArray);
     }
   };
 
-  const handleSubmit = () => {
-    setIsProcessing(true);
+  const handleSubmit = async () => {
+    // Create FormData to send files to backend
+    const formData = new FormData();
+    
+    // Add all uploaded files
+    uploadedFiles.forEach((file) => {
+      formData.append('medical_images', file);
+    });
+    
+    // Add creatinine value
+    formData.append('creatinine', creatinine);
+    
+    // Send to backend API
+    try {
+      const response = await fetch('http://localhost:5000/api/process', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Backend response:', data);
+        setIsProcessing(true);
+      } else {
+        console.error('Upload failed:', response.statusText);
+        alert('Failed to upload files. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      alert('Error connecting to server. Please ensure the backend is running.');
+    }
   };
 
   const handleProcessingComplete = () => {
@@ -82,9 +111,10 @@ const LandingPage = () => {
                   <span className="indicator-title">{uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} uploaded</span>
                 </div>
                 <div className="file-list">
-                  {uploadedFiles.map((fileName, index) => (
+                  {uploadedFiles.map((file, index) => (
                     <div key={index} className="file-item">
-                      <span className="file-name">{fileName}</span>
+                      <span className="file-name">{file.name}</span>
+                      <span className="file-size"> ({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
                     </div>
                   ))}
                 </div>
@@ -108,6 +138,8 @@ const LandingPage = () => {
                 min="0"
                 placeholder="Enter value"
                 className="creatinine-input"
+                value={creatinine}
+                onChange={(e) => setCreatinine(e.target.value)}
               />
               <span className="unit-label">mg/dL</span>
             </div>
