@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProcessingScreen.css';
 
-const ProgressStep = ({ label, status, time }) => {
+const ProgressStep = ({ label, status }) => {
   return (
     <div className={`progress-step ${status}`}>
       <div className="step-indicator">
@@ -17,7 +17,6 @@ const ProgressStep = ({ label, status, time }) => {
       </div>
       <div className="step-content">
         <span className="step-label">{label}</span>
-        <span className="step-time">{time}</span>
       </div>
     </div>
   );
@@ -83,22 +82,18 @@ const ProcessingScreen = ({ onComplete }) => {
             <ProgressStep 
               label="Image Processing" 
               status={analysisStage >= 0 ? (analysisStage > 0 ? 'complete' : 'active') : 'pending'}
-              time="0.8s"
             />
             <ProgressStep 
               label="AI Segmentation" 
               status={analysisStage >= 1 ? (analysisStage > 1 ? 'complete' : 'active') : 'pending'}
-              time="2.1s"
             />
             <ProgressStep 
               label="Volumetric Analysis" 
               status={analysisStage >= 2 ? (analysisStage > 2 ? 'complete' : 'active') : 'pending'}
-              time="0.5s"
             />
             <ProgressStep 
               label="Dose Calculation" 
               status={analysisStage >= 3 ? 'complete' : (analysisStage === 3 ? 'active' : 'pending')}
-              time="0.3s"
             />
           </div>
 

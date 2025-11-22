@@ -6,9 +6,9 @@ const ResultsPage = () => {
 
   // Mock data - in real app this would come from backend
   const medications = [
-    { name: 'Axitinib', dose: '38 mg', standard: '50 mg' },
-    { name: 'Nivolumab', dose: '60 mg', standard: '80 mg' },
-    { name: 'Cisplatin', dose: '2-4 mg', standard: '5 mg' }
+    { name: 'Axitinib', dose: '38 mg' },
+    { name: 'Nivolumab', dose: '60 mg' },
+    { name: 'Cisplatin', dose: '2-4 mg' }
   ];
 
   const kidneyRegions = [
@@ -29,6 +29,25 @@ const ResultsPage = () => {
           </button>
         </header>
 
+        {/* Patient Summary Stats at Top */}
+        <div className="patient-summary">
+          <div className="summary-card">
+            <div className="summary-label">GFR (eGFR)</div>
+            <div className="summary-value">42 mL/min/1.73m²</div>
+            <div className="summary-status">Stage 3 CKD</div>
+          </div>
+          <div className="summary-card">
+            <div className="summary-label">Creatinine</div>
+            <div className="summary-value">1.8 mg/dL</div>
+            <div className="summary-status">Elevated</div>
+          </div>
+          <div className="summary-card">
+            <div className="summary-label">Kidney Function</div>
+            <div className="summary-value">52%</div>
+            <div className="summary-status">Moderate Impairment</div>
+          </div>
+        </div>
+
         <div className="results-content">
           {/* Left Side - Search Bar and Drug List */}
           <div className="left-panel">
@@ -44,16 +63,13 @@ const ResultsPage = () => {
               <h2 className="section-title">Recommended Dosages</h2>
               {medications.map((med, index) => (
                 <div key={index} className="drug-card">
-                  <div className="drug-name">{med.name}</div>
-                  <div className="drug-doses">
-                    <div className="dose-row">
-                      <span className="dose-label">Adjusted:</span>
-                      <span className="dose-value adjusted">{med.dose}</span>
-                    </div>
-                    <div className="dose-row">
-                      <span className="dose-label">Standard:</span>
-                      <span className="dose-value standard">{med.standard}</span>
-                    </div>
+                  <div className="drug-header">
+                    <div className="drug-name">{med.name}</div>
+                    <button className="view-calc-btn">View Calculations</button>
+                  </div>
+                  <div className="drug-dose-main">
+                    <span className="dose-label">Recommended Dose:</span>
+                    <span className="dose-value">{med.dose}</span>
                   </div>
                   <div className="dose-info">
                     <svg className="info-icon" width="16" height="16" viewBox="0 0 16 16">
@@ -65,10 +81,6 @@ const ResultsPage = () => {
                 </div>
               ))}
             </div>
-
-            <button className="view-calculations-btn">
-              View Detailed Calculations
-            </button>
           </div>
 
           {/* Right Side - 3D Kidney Visualization */}
@@ -190,25 +202,6 @@ const ResultsPage = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Patient Summary Footer */}
-        <div className="patient-summary">
-          <div className="summary-card">
-            <div className="summary-label">GFR (eGFR)</div>
-            <div className="summary-value">42 mL/min/1.73m²</div>
-            <div className="summary-status">Stage 3 CKD</div>
-          </div>
-          <div className="summary-card">
-            <div className="summary-label">Creatinine</div>
-            <div className="summary-value">1.8 mg/dL</div>
-            <div className="summary-status">Elevated</div>
-          </div>
-          <div className="summary-card">
-            <div className="summary-label">Kidney Function</div>
-            <div className="summary-value">52%</div>
-            <div className="summary-status">Moderate Impairment</div>
           </div>
         </div>
       </div>
