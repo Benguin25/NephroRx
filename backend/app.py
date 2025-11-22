@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
+import numpy as np
 import processing
 import calculations
 
@@ -22,6 +22,76 @@ def health():
         "status": "ok",
         "service": "nephrorx-backend"
     }), 200
+
+@app.route("/analyze_structural", methods=["POST"])
+def analyze_structural():
+    try:
+        data = request.json
+        print("🔥 incoming structural request:", type(data), data)
+
+        if not data:
+            return jsonify({"error": "No JSON body received"}), 400
+
+        vertices = data.get("vertices")
+        faces = data.get("faces")
+
+        # ------------ VALIDATION ------------
+        if vertices is None or faces is None:
+            return jsonify({"error": "Missing vertices or faces"}), 400
+
+        if len(vertices) == 0 or len(faces) == 0:
+            return jsonify({"error": "Empty vertices or faces"}), 400
+
+        if len(vertices) % 3 != 0:
+            return jsonify({"error": "Vertex array cannot reshape to Nx3"}), 400
+
+        if len(faces) % 3 != 0:
+            return jsonify({"error": "Face array cannot reshape to Nx3"}), 400
+
+        # ------------ RESHAPE ------------
+        verts = np.array(vertices, dtype=float).reshape(-1, 3)
+        faces = np.array(faces, dtype=int).reshape(-1, 3)
+
+        # ------------ ROUGHNESS ------------
+        rough = calculations.calculate_roughness(verts, faces)
+
+        if rough < 1.2:
+            rough_label = "Low irregularity"
+        elif rough < 1.5:
+            rough_label = "Moderate irregularity"
+        else:
+            rough_label = "High structural irregularity"
+
+        # ------------ CURVATURE VARIABILITY ------------
+        curvature_info = calculations.compute_curvature_variability(verts, faces)
+
+        cvi = float(curvature_info["curvature_variability_index"])
+        mean_curv = float(curvature_info["mean_curvature"])
+
+        if cvi < 0.15:
+            curvature_label = "Low curvature variability (smooth)"
+        elif cvi < 0.30:
+            curvature_label = "Moderate surface variation"
+        else:
+            curvature_label = "High curvature variability (possible abnormal surface)"
+
+        # ------------ RETURN ------------
+        return jsonify({
+            "roughness": float(rough),
+            "structural_category": rough_label,
+            "cvi": cvi,
+            "curvature_label": curvature_label,
+            "mean_curvature": mean_curv,
+            "message": (
+                "Geometric irregularities are measured for research and analysis purposes. "
+                "This is NOT a medical diagnosis."
+            )
+        })
+
+    except Exception as e:
+        print("❌ Structural error:", e)
+        return jsonify({"error": str(e)}), 500
+
 
 # ---------------------------------------------------
 # MAIN PIPELINE
