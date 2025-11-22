@@ -3,6 +3,7 @@ import './ResultsPage.css';
 
 const ResultsPage = () => {
   const [selectedRegion, setSelectedRegion] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Mock data - in real app this would come from backend
   const medications = [
@@ -10,6 +11,11 @@ const ResultsPage = () => {
     { name: 'Nivolumab', dose: '60 mg' },
     { name: 'Cisplatin', dose: '2-4 mg' }
   ];
+
+  // Filter medications based on search query
+  const filteredMedications = medications.filter(med =>
+    med.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const kidneyRegions = [
     { id: 'left-kidney', name: 'Left Kidney', health: 65, color: '#ff6b6b' },
@@ -56,12 +62,14 @@ const ResultsPage = () => {
                 type="text" 
                 className="search-bar" 
                 placeholder="Search medications..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
 
             <div className="drug-list">
               <h2 className="section-title">Recommended Dosages</h2>
-              {medications.map((med, index) => (
+              {filteredMedications.length > 0 ? filteredMedications.map((med, index) => (
                 <div key={index} className="drug-card">
                   <div className="drug-header">
                     <div className="drug-name">{med.name}</div>
@@ -79,7 +87,11 @@ const ResultsPage = () => {
                     <span>Adjusted for reduced kidney function</span>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="no-results">
+                  <p>No medications found matching "{searchQuery}"</p>
+                </div>
+              )}
             </div>
           </div>
 
