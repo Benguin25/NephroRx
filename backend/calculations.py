@@ -1,9 +1,72 @@
 import numpy as np
 import nibabel as nib
 from skimage import measure
+import trimesh
+
+# ----------------------------------------------------------
+# ROUGHNESS SCORE
+# ----------------------------------------------------------
+def calculate_roughness(verts, faces):
+    """
+    Roughness = (Actual Surface Area) / (Equivalent Sphere Area)
+    ~1.0 = smooth
+    >1.5 = likely irregular / tumor
+    """
+    mesh = trimesh.Trimesh(vertices=verts, faces=faces)
+
+    area = mesh.area
+    volume = mesh.volume
+
+    expected_area = (36 * np.pi * (volume ** 2)) ** (1 / 3)
+
+    roughness = area / expected_area
+    return round(float(roughness), 2)
+
+
+# ----------------------------------------------------------
+# CURVATURE VARIABILITY INDEX (CVI)
+# ----------------------------------------------------------
+def compute_curvature_variability(verts, faces):
+    mesh = trimesh.Trimesh(vertices=verts, faces=faces)
+
+    curvature_list = []
+    adjacency = mesh.vertex_neighbors  # this is a list of lists
+
+    for i, neighbors in enumerate(adjacency):
+        if len(neighbors) < 2:
+            continue
+
+        center = verts[i]
+        neigh_pts = verts[neighbors]
+
+        dists = np.linalg.norm(neigh_pts - center, axis=1)
+        if np.mean(dists) == 0:
+            continue
+
+        # local curvature approximation
+        curvature = np.std(dists) / np.mean(dists)
+        curvature_list.append(curvature)
+
+    if len(curvature_list) == 0:
+        return {
+            "curvature_variability_index": 0.0,
+            "mean_curvature": 0.0
+        }
+
+    curvature_list = np.array(curvature_list, dtype=float)
+
+    mean_curvature = float(np.mean(curvature_list))
+    cvi = float(np.std(curvature_list) / (mean_curvature + 1e-8))
+
+    return {
+        "curvature_variability_index": round(cvi, 3),
+        "mean_curvature": round(mean_curvature, 3)
+    }
+
+
 
 def process_seg_file(seg_path, creatinine_mg_dl):
-    
+
     img = nib.load(seg_path)
     data = img.get_fdata()
 
