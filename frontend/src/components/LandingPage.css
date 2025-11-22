@@ -293,6 +293,40 @@
   min-width: 50px;
 }
 
+/* Submit Button */
+.submit-button {
+  margin-top: 40px;
+  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+  color: #ffffff;
+  border: none;
+  padding: 18px 60px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  box-shadow: 
+    0 6px 20px rgba(0, 188, 212, 0.4),
+    0 0 30px rgba(0, 188, 212, 0.2);
+}
+
+.submit-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 10px 30px rgba(0, 188, 212, 0.6),
+    0 0 50px rgba(0, 188, 212, 0.4);
+  background: linear-gradient(135deg, #00d4e6 0%, #00bcd4 100%);
+}
+
+.submit-button:active {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 5px 15px rgba(0, 188, 212, 0.5),
+    0 0 30px rgba(0, 188, 212, 0.3);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .upload-cards {
