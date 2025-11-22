@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Upload, Activity, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AboutButton from './About.jsx';
+import ProcessingScreen from './ProcessingScreen.jsx';
 
 export default function NephroRX() {
   const [scrolled, setScrolled] = useState(0);
@@ -14,6 +15,7 @@ export default function NephroRX() {
     file: null,
   });
   const [analyzing, setAnalyzing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const canvasRef = useRef(null);
   const navigate = useNavigate();
 
@@ -24,6 +26,7 @@ export default function NephroRX() {
     }
 
     setAnalyzing(true);
+    setIsProcessing(true);
     const uploadData = new FormData();
 
     const file = formData.file;
@@ -46,19 +49,29 @@ export default function NephroRX() {
       if (response.ok) {
         const data = await response.json();
         console.log("Backend response:", data);
-        navigate("/results", { state: { result: data } });
+        // Navigate to results after processing screen completes
+        setTimeout(() => {
+          navigate("/results", { state: { result: data } });
+        }, 100);
       } else {
         console.error("Upload failed:", response.statusText);
+        setIsProcessing(false);
         alert("Failed to upload files. Please try again.");
       }
     } catch (error) {
       console.error("Error uploading files:", error);
+      setIsProcessing(false);
       alert(
         "Error connecting to server. Please ensure the backend is running."
       );
     } finally {
       setAnalyzing(false);
     }
+  };
+
+  const handleProcessingComplete = () => {
+    // This will be called when the ProcessingScreen animation completes
+    // The navigation will happen in handleSubmit after the response
   };
 
   useEffect(() => {
@@ -173,6 +186,10 @@ export default function NephroRX() {
 
   const titleScale = Math.min(1.2, 0.8 + scrolled / 1000);
   const titleOpacity = Math.max(0, 1 - scrolled / 500);
+
+  if (isProcessing) {
+    return <ProcessingScreen onComplete={handleProcessingComplete} />;
+  }
 
   return (
     <div className="bg-[#121212] text-white min-h-screen relative overflow-hidden">
