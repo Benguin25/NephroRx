@@ -22,21 +22,16 @@ def convert_dicom_to_nifti(dicom_dir, output_dir):
     
 
 def run_ai_model(input_nifti_path, output_dir):
-    """
-    Runs TotalSegmentator unless the input NIfTI is already a segmentation mask.
-    """
-    # Check if already segmented
     nii = nib.load(input_nifti_path)
     data = nii.get_fdata()
 
     unique_vals = np.unique(data)
 
-    # Heuristic: segmentation masks have very few unique values (0, 1, 2)
+
     if len(unique_vals) < 10:
         print("⚠️ Detected segmentation mask — skipping TotalSegmentator.")
-        return input_nifti_path  # Use file directly
-
-    # Not a mask → run full segmentation
+        return input_nifti_path
+    
     output_filename = "segmentation.nii.gz"
     output_path = os.path.join(output_dir, output_filename)
 

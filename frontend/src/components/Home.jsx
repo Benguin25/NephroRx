@@ -49,7 +49,7 @@ export default function NephroRX() {
       if (response.ok) {
         const data = await response.json();
         console.log("Backend response:", data);
-        // Navigate to results after processing screen completes
+        
         setTimeout(() => {
           navigate("/results", { state: { result: data } });
         }, 100);
@@ -70,8 +70,7 @@ export default function NephroRX() {
   };
 
   const handleProcessingComplete = () => {
-    // This will be called when the ProcessingScreen animation completes
-    // The navigation will happen in handleSubmit after the response
+    setIsProcessing(false);
   };
 
   useEffect(() => {
@@ -84,7 +83,7 @@ export default function NephroRX() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 3D Cubes Animation
+  
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -118,7 +117,7 @@ export default function NephroRX() {
       ctx.strokeStyle = `rgba(139, 116, 98, ${cube.opacity})`;
       ctx.lineWidth = 1.5;
 
-      // Front face
+      
       ctx.beginPath();
       ctx.moveTo(-s / 2, -s / 2);
       ctx.lineTo(s / 2, -s / 2);
@@ -127,7 +126,7 @@ export default function NephroRX() {
       ctx.closePath();
       ctx.stroke();
 
-      // Back face (offset)
+      
       const offset = s * 0.3;
       ctx.beginPath();
       ctx.moveTo(-s / 2 + offset, -s / 2 - offset);
@@ -193,14 +192,12 @@ export default function NephroRX() {
 
   return (
     <div className="bg-[#121212] text-white min-h-screen relative overflow-hidden">
-      {/* 3D Cubes Canvas Background */}
       <canvas ref={canvasRef} className="fixed inset-0 z-0" />
-      
+
       <div className="relative z-10">
-        {/* About Button */}
         <AboutButton />
 
-        {/* Hero Section */}
+        
         <section className="min-h-screen flex flex-col items-center justify-center px-6 relative">
           <div
             style={{
@@ -212,7 +209,7 @@ export default function NephroRX() {
               <div className="inline-flex items-center gap-4 bg-[#8B7462]/5 border border-[#8B7462]/20 rounded-full px-8 py-3">
                 <Activity size={48} className="text-[#8B7462]" />
                 <span className="text- text-[#8B7462] tracking-widest uppercase">
-                  Math-Powered Kidney Analysis
+                  Geometry Powered Kidney Analysis
                 </span>
               </div>
             </div>
@@ -222,8 +219,7 @@ export default function NephroRX() {
             </h1>
 
             <p className="text-lg text-zinc-500 max-w-xl mx-auto mb-12 font-light">
-              Advanced MRI kidney volume analysis with intelligent prescription
-              recommendations
+              Advanced MRI Kidney Analysis Using Computational Geometry
             </p>
 
             {!showForm && (
@@ -237,7 +233,6 @@ export default function NephroRX() {
           </div>
         </section>
 
-        {/* Form Section */}
         <section
           className={`min-h-screen px-6 py-20 transition-all duration-1000 ${
             showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
@@ -370,7 +365,6 @@ export default function NephroRX() {
           </div>
         </section>
 
-        {/* Footer */}
         <footer className="border-t border-[#8B7462]/10 px-6 py-12 mt-20">
           <div className="max-w-7xl mx-auto text-center text-zinc-700 text-s font-bold tracking-wide">
             <p className="mt-2">For Hackathon please don't use these values.</p>

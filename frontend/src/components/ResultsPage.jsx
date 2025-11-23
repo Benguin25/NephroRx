@@ -16,7 +16,6 @@ export default function ResultsPage() {
   const calculateDrugDose = async (drug) => {
     setLoading(true);
     try {
-      // Update this URL to match your backend endpoint
       const response = await fetch('http://localhost:5000/calculate-drug-dose', {
         method: 'POST',
         headers: {
@@ -66,12 +65,10 @@ export default function ResultsPage() {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white relative overflow-hidden font-sans">
-      {/* Background / 3D Viewer Area */}
       <div className="absolute inset-0 z-0">
          <KidneyViewer mesh={result.mesh} />
       </div>
 
-      {/* Overlay Content - Top Left */}
       <div className="relative z-10 p-8 md:p-12 max-w-md pointer-events-none">
         
         <button 
@@ -88,12 +85,11 @@ export default function ResultsPage() {
              </div>
              <div>
                 <h1 className="text-lg font-light tracking-wide text-zinc-100">Analysis Report</h1>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-widest">AI-Generated Assessment</p>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Mathematical Assessment</p>
              </div>
           </div>
 
           <div className="space-y-8">
-            {/* Volume Section */}
             <div>
               <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                 <FileText size={12} /> Kidney Volume
@@ -106,12 +102,10 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4 bg-black/20 p-4 rounded-2xl border border-white/5">
                <div>
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Est. GFR</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Est. Nephron Capacity Index</p>
                   <p className="text-2xl font-light text-zinc-200">{result.gfr_final ? result.gfr_final.toFixed(1) : "0.0"}</p>
-                  <p className="text-[10px] text-zinc-600">mL/min/1.73m²</p>
                </div>
                <div>
                   <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Creatinine</p>
@@ -122,7 +116,6 @@ export default function ResultsPage() {
           </div>
         </div>
 
-        {/* Analyze Buttons - Directly Below Analysis Report */}
         <div className="pointer-events-auto w-full mt-4 space-y-3">
           <button 
             onClick={() => navigate("/analysis", { state: { result } })}
@@ -142,7 +135,6 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      {/* Drug Selection Box - Right Side */}
       <div className="absolute right-8 top-8 md:right-12 md:top-12 z-10 w-80 pointer-events-none">
         <div className="pointer-events-auto bg-[#1a1a1a]/60 backdrop-blur-xl border border-white/5 p-8 rounded-3xl shadow-2xl">
           <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-6">
@@ -155,7 +147,6 @@ export default function ResultsPage() {
              </div>
           </div>
 
-          {/* Search Bar */}
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
             <input
@@ -167,7 +158,6 @@ export default function ResultsPage() {
             />
           </div>
 
-          {/* Drug List */}
           <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
             {filteredDrugs.length > 0 ? (
               filteredDrugs.map(drug => (
@@ -191,7 +181,6 @@ export default function ResultsPage() {
             )}
           </div>
 
-          {/* Selected Drug Dose */}
           {selectedDrug && (
             <div className="mt-6 pt-6 border-t border-white/5">
               <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3">Recommended Dose</p>

@@ -3,9 +3,6 @@ import nibabel as nib
 from skimage import measure
 import trimesh
 
-# ----------------------------------------------------------
-# ROUGHNESS SCORE
-# ----------------------------------------------------------
 def calculate_roughness(verts, faces):
     """
     Roughness = (Actual Surface Area) / (Equivalent Sphere Area)
@@ -22,15 +19,11 @@ def calculate_roughness(verts, faces):
     roughness = area / expected_area
     return round(float(roughness), 2)
 
-
-# ----------------------------------------------------------
-# CURVATURE VARIABILITY INDEX (CVI)
-# ----------------------------------------------------------
 def compute_curvature_variability(verts, faces):
     mesh = trimesh.Trimesh(vertices=verts, faces=faces)
 
     curvature_list = []
-    adjacency = mesh.vertex_neighbors  # this is a list of lists
+    adjacency = mesh.vertex_neighbors
 
     for i, neighbors in enumerate(adjacency):
         if len(neighbors) < 2:
@@ -43,7 +36,6 @@ def compute_curvature_variability(verts, faces):
         if np.mean(dists) == 0:
             continue
 
-        # local curvature approximation
         curvature = np.std(dists) / np.mean(dists)
         curvature_list.append(curvature)
 
@@ -70,14 +62,11 @@ def process_seg_file(seg_path, creatinine_mg_dl):
     img = nib.load(seg_path)
     data = img.get_fdata()
 
-    # 1. Safe Spacing
     try:
         spacing = img.header.get_zooms()[:3]
     except:
         spacing = (1.0, 1.0, 1.0)
 
-    # 2. Marching Cubes
-    # Generates vertices in real-world units (mm) due to spacing
     verts, faces, normals, values = measure.marching_cubes(
         data, 
         level=0.5, 
@@ -85,31 +74,17 @@ def process_seg_file(seg_path, creatinine_mg_dl):
         spacing=spacing
     )
 
-    # 3. Volume Calculation (Corrected Divergence Theorem)
-    # We use the signed volume of tetrahedrons method.
-    # Volume = sum( dot(p1, cross(p2, p3)) ) / 6.0
-    # This calculates the volume of the pyramid formed by the triangle and the origin (0,0,0).
-    # Since the mesh is closed, the internal volumes cancel out perfectly.
-    
     volume_mm3 = 0.0
     for face in faces:
         p1 = verts[face[0]]
         p2 = verts[face[1]]
         p3 = verts[face[2]]
-        
-        # Signed volume of tetrahedron from origin
-        # Note: You can also use dot(p1, cross(p2-p1, p3-p1)) / 6 for numerical stability if coords are huge
-        # but for this range, the standard origin method works well.
+    
         v_tet = np.dot(p1, np.cross(p2, p3)) / 6.0
         volume_mm3 += v_tet
 
-    # 4. Convert to cm3 (mL)
-    # CRITICAL: Take abs() at the very end. 
-    # If the mesh is "inside out" (winding order), the total volume will be negative.
-    # We just want the magnitude.
     vol_cm3 = abs(volume_mm3) / 1000.0
 
-    # 5. Pharmacy Logic
     gfr_estimate = vol_cm3 * 0.8
     safe_creatinine = max(float(creatinine_mg_dl), 0.5) 
     creatinine_factor = 1 / safe_creatinine

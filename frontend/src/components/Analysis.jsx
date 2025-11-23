@@ -68,23 +68,20 @@ export default function AnalysisPage() {
 
       <div className="max-w-5xl mx-auto space-y-8">
         
-        {/* Header */}
         <div>
           <h1 className="text-5xl font-extralight text-white mb-3 tracking-tight">Structural Analysis</h1>
           <p className="text-zinc-500 text-sm uppercase tracking-widest">Geometric Surface Assessment</p>
         </div>
 
-        {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-white/5 p-6 rounded-2xl">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Kidney Filtration Index</p>
+            <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Kidney Ratio</p>
             <p className="text-4xl font-light text-white">{result.kfi}</p>
           </div>
           <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-white/5 p-6 rounded-2xl">
             <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Total Volume</p>
             <p className="text-4xl font-light text-white">
-              {Number(result.volume_cm3).toFixed(2)}
- <span className="text-xl text-zinc-500">cm³</span>
+              {Number(result.volume_cm3).toFixed(2)} <span className="text-xl text-zinc-500">cm³</span>
             </p>
           </div>
         </div>
@@ -98,7 +95,6 @@ export default function AnalysisPage() {
           </div>
         ) : structuralData ? (
           <>
-            {/* Roughness Section */}
             <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-white/5 rounded-3xl shadow-2xl overflow-hidden">
               
               <div className="p-8 border-b border-white/5">
@@ -115,7 +111,6 @@ export default function AnalysisPage() {
 
               <div className="p-8 space-y-6">
                 
-                {/* Roughness Score Card */}
                 <button
                   onClick={() => toggleSection('roughness')}
                   className="w-full text-left bg-gradient-to-r from-[#8B7462]/20 to-transparent border-l-4 border-[#8B7462] p-6 rounded-r-2xl hover:from-[#8B7462]/30 transition-all group"
@@ -135,7 +130,6 @@ export default function AnalysisPage() {
                   </div>
                 </button>
 
-                {/* Expandable Roughness Details */}
                 <div className={`overflow-hidden transition-all duration-300 ${expandedSections.roughness ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
                   <div className="bg-black/20 border border-white/5 rounded-2xl p-6 space-y-5">
                     
@@ -148,11 +142,11 @@ export default function AnalysisPage() {
                         </li>
                         <li className="flex gap-2">
                           <span className="text-[#8B7462] mt-1">•</span>
-                          <span>Healthy kidneys typically show mild natural irregularity (scores around 1.1–1.4)</span>
+                          <span>Healthy kidneys typically show natural irregularity (scores around 1.1–1.4)</span>
                         </li>
                         <li className="flex gap-2">
                           <span className="text-[#8B7462] mt-1">•</span>
-                          <span>Values above <strong className="text-zinc-300">1.5</strong> often indicate stronger shape distortion or lobulation</span>
+                          <span>Values above <strong className="text-zinc-300">1.5</strong> often indicate stronger abnormality and possibly tumors.</span>
                         </li>
                       </ul>
                     </div>
@@ -163,7 +157,7 @@ export default function AnalysisPage() {
                         <p className="text-[#c7b8a3]">expected_area = (36 × π × V²)^(1/3)</p>
                         <p className="text-[#c7b8a3]">roughness = actual_surface_area / expected_area</p>
                         <p className="text-zinc-500 text-xs mt-3 font-sans">
-                          This compares your kidney's surface area to a shape-idealized organ of the same volume
+                          Compares your kidney's surface area to a shape idealized organ of the same volume.
                         </p>
                       </div>
                     </div>
@@ -174,7 +168,6 @@ export default function AnalysisPage() {
               </div>
             </div>
 
-            {/* CVI Section */}
             <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-white/5 rounded-3xl shadow-2xl overflow-hidden">
               
               <div className="p-8 border-b border-white/5">
@@ -191,7 +184,6 @@ export default function AnalysisPage() {
 
               <div className="p-8 space-y-6">
                 
-                {/* CVI Score Card */}
                 <button
                   onClick={() => toggleSection('cvi')}
                   className="w-full text-left bg-gradient-to-r from-[#8B7462]/20 to-transparent border-l-4 border-[#8B7462] p-6 rounded-r-2xl hover:from-[#8B7462]/30 transition-all group"
@@ -211,7 +203,6 @@ export default function AnalysisPage() {
                   </div>
                 </button>
 
-                {/* Expandable CVI Details */}
                 <div className={`overflow-hidden transition-all duration-300 ${expandedSections.cvi ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
                   <div className="bg-black/20 border border-white/5 rounded-2xl p-6 space-y-5">
                     
@@ -228,7 +219,7 @@ export default function AnalysisPage() {
                         </li>
                         <li className="flex gap-2">
                           <span className="text-[#8B7462] mt-1">•</span>
-                          <span>Higher CVI values suggest more bumps, dips, or lobulated regions on the surface</span>
+                          <span>A higher CVI means the kidney surface is less smooth, showing more inflamed areas.</span>
                         </li>
                       </ul>
                     </div>
@@ -238,9 +229,6 @@ export default function AnalysisPage() {
                       <div className="bg-black/40 p-4 rounded-xl font-mono text-sm space-y-2">
                         <p className="text-[#c7b8a3]">curvature[i] = mean(|neighbor_vertex - vertex_i|)</p>
                         <p className="text-[#c7b8a3]">CVI = std(curvature) / mean(curvature)</p>
-                        <p className="text-zinc-500 text-xs mt-3 font-sans">
-                          CVI reflects local surface complexity, not medical conditions
-                        </p>
                       </div>
                     </div>
 
@@ -250,12 +238,6 @@ export default function AnalysisPage() {
               </div>
             </div>
 
-            {/* Disclaimer */}
-            <div className="bg-black/20 border border-white/5 rounded-2xl p-6">
-              <p className="text-xs text-zinc-500 leading-relaxed">
-                <strong className="text-zinc-400">Note:</strong> This page describes geometric patterns of the mesh only and does not diagnose medical conditions. All measurements are based on computational geometry analysis.
-              </p>
-            </div>
           </>
         ) : (
           <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-white/5 rounded-3xl p-12 text-center">
