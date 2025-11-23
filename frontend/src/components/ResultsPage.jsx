@@ -16,7 +16,7 @@ export default function ResultsPage() {
   const calculateDrugDose = async (drug) => {
     setLoading(true);
     try {
-      const response = await fetch('http://nephrorx.app/calculate-drug-dose', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/calculate-drug-dose`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -41,7 +41,7 @@ export default function NephroRX() {
     uploadData.append("creatinine_mg_dl", formData.creatinine || "1.0");
 
     try {
-      const response = await fetch("http://nephrorx.app/analyze", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/analyze`, {
         method: "POST",
         body: uploadData,
       });
