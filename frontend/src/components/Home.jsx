@@ -51,7 +51,16 @@ export default function NephroRX() {
         console.log("Backend response:", data);
 
         setTimeout(() => {
-          navigate("/results", { state: { result: data } });
+          navigate("/results", { 
+            state: { 
+              result: data,
+              patientData: {
+                age: formData.age,
+                sex: formData.sex,
+                weight: formData.weight
+              }
+            } 
+          });
         }, 100);
       } else {
         console.error("Upload failed:", response.statusText);

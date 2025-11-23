@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drug Dosing Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .result {
+            background: #2a2a2a;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #8B7462;
+        }
+        button {
+            background: #8B7462;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Drug Dosing Calculator Test</h1>
+    <div id="output"></div>
+
+    <script type="module">
+        // Copy the drug dosing code here for testing
+        const DRUG_CONFIGS = [
+            {
+                id: "cyclophosphamide",
+                displayName: "Cyclophosphamide",
+                category: "chemo",
+                standardFormula: "W × 10-15",
+                tkvAdjustedFormula: "Dose_std × KR"
+            },
+            {
+                id: "vancomycin",
+                displayName: "Vancomycin",
+                category: "antibiotic",
+                standardFormula: "W × 15-20",
+                tkvAdjustedFormula: "Dose_std × KR"
+            }
+        ];
+
+        function calculateTKVExpected(patient) {
+            const base = patient.sex === "male" ? 170 : 150;
+            const sexF = patient.sex === "male" ? 1.0 : 0.90;
+            const ageF = 1 - Math.max(0, patient.age - 40) * 0.01;
+            const wtF = 1 + 0.003 * (patient.weightKg - 70);
+            return base * sexF * ageF * wtF;
+        }
+
+        function calculateKidneyRatio(tkvMeasured, tkvExpected) {
+            return tkvMeasured / tkvExpected;
+        }
+
+        function calculateStandardDose(drug, patient) {
+            const weight = patient.weightKg;
+            switch (drug.id) {
+                case "cyclophosphamide": return weight * 12.5;
+                case "vancomycin": return weight * 17.5;
+                default: return weight * 10;
+            }
+        }
+
+        function calculateDoseForDrug(drug, patient) {
+            const doseStdMg = calculateStandardDose(drug, patient);
+            const tkvExpected = calculateTKVExpected(patient);
+            const kidneyRatio = calculateKidneyRatio(patient.tkvMeasured, tkvExpected);
+            const doseNormalMg = doseStdMg;
+            const doseTkvMg = doseNormalMg * kidneyRatio;
+
+            return {
+                drug,
+                doseStdMg,
+                tkvExpected,
+                kidneyRatio,
+                doseNormalMg,
+                doseTkvMg
+            };
+        }
+
+        function getDrugById(drugId) {
+            const normalizedId = drugId.toLowerCase();
+            return DRUG_CONFIGS.find(d => 
+                d.id === normalizedId || 
+                d.displayName.toLowerCase() === normalizedId
+            );
+        }
+
+        // Test with sample data
+        const testPatient = {
+            age: 45,
+            sex: "male",
+            weightKg: 75,
+            serumCreatinine: 1.2,
+            tkvMeasured: 396.0
+        };
+
+        const output = document.getElementById('output');
+        
+        output.innerHTML += '<h2>Test Patient</h2>';
+        output.innerHTML += '<div class="result">' + JSON.stringify(testPatient, null, 2) + '</div>';
+
+        // Test each drug
+        ["Cyclophosphamide", "Vancomycin"].forEach(drugName => {
+            const drug = getDrugById(drugName);
+            if (drug) {
+                const result = calculateDoseForDrug(drug, testPatient);
+                output.innerHTML += `<h2>${drugName}</h2>`;
+                output.innerHTML += '<div class="result">';
+                output.innerHTML += `Normal Dose: ${result.doseNormalMg.toFixed(1)} mg<br>`;
+                output.innerHTML += `TKV-Adjusted: ${result.doseTkvMg.toFixed(1)} mg<br>`;
+                output.innerHTML += `Kidney Ratio: ${result.kidneyRatio.toFixed(3)}<br>`;
+                output.innerHTML += `TKV Expected: ${result.tkvExpected.toFixed(2)} mL<br>`;
+                output.innerHTML += '</div>';
+            } else {
+                output.innerHTML += `<h2>${drugName}</h2>`;
+                output.innerHTML += '<div class="result" style="color: red;">Drug not found!</div>';
+            }
+        });
+
+        // Test that the conversion works
+        console.log("Test complete - check console for details");
+        console.log("Test Patient:", testPatient);
+        console.log("Cyclophosphamide:", getDrugById("Cyclophosphamide"));
+        console.log("cyclophosphamide:", getDrugById("cyclophosphamide"));
+    </script>
+</body>
+</html>
