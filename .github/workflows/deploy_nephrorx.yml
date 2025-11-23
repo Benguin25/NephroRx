@@ -3,7 +3,7 @@ name: Build and deploy Python app to Azure Web App - NephroRx
 on:
   push:
     branches:
-      - deploy
+      - main
   workflow_dispatch:
 
 jobs:
@@ -62,4 +62,5 @@ jobs:
           app-name: 'NephroRx'
           slot-name: 'Production'
           package: backend.zip
+
 
