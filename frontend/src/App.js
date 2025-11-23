@@ -4,7 +4,7 @@ import './App.css';
 import Home from './components/Home';
 import ResultsPage from './components/ResultsPage';
 import AnalysisPage from './components/Analysis';
-
+import Biological from './components/Biological';
 function App() {
   return (
     <Router>
@@ -13,6 +13,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/analysis" element={<AnalysisPage />} />
+          <Route path="/Biological" element={<Biological />} />
         </Routes>
       </div>
     </Router>

@@ -126,7 +126,7 @@ export default function ResultsPage() {
           </button>
 
           <button 
-            onClick={() => navigate("/biological-analysis", { state: { result } })}
+            onClick={() => navigate("/Biological", { state: { result } })}
             className="w-full flex items-center justify-center gap-2 bg-[#8B7462]/20 hover:bg-[#8B7462]/30 border border-[#8B7462]/50 text-[#e0cfc2] px-6 py-3 rounded-xl transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#8B7462]/20 text-sm font-light tracking-wide group"
           >
             <Pill size={16} className="group-hover:scale-110 transition-transform" />
