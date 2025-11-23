@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Upload, Activity, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AboutButton from './About.jsx';
-import ProcessingScreen from './ProcessingScreen.jsx';
+import AboutButton from "./About.jsx";
+import ProcessingScreen from "./ProcessingScreen.jsx";
 
 export default function NephroRX() {
   const [scrolled, setScrolled] = useState(0);
@@ -49,7 +49,7 @@ export default function NephroRX() {
       if (response.ok) {
         const data = await response.json();
         console.log("Backend response:", data);
-        
+
         setTimeout(() => {
           navigate("/results", { state: { result: data } });
         }, 100);
@@ -83,7 +83,6 @@ export default function NephroRX() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -117,7 +116,6 @@ export default function NephroRX() {
       ctx.strokeStyle = `rgba(139, 116, 98, ${cube.opacity})`;
       ctx.lineWidth = 1.5;
 
-      
       ctx.beginPath();
       ctx.moveTo(-s / 2, -s / 2);
       ctx.lineTo(s / 2, -s / 2);
@@ -126,7 +124,6 @@ export default function NephroRX() {
       ctx.closePath();
       ctx.stroke();
 
-      
       const offset = s * 0.3;
       ctx.beginPath();
       ctx.moveTo(-s / 2 + offset, -s / 2 - offset);
@@ -197,7 +194,6 @@ export default function NephroRX() {
       <div className="relative z-10">
         <AboutButton />
 
-        
         <section className="min-h-screen flex flex-col items-center justify-center px-6 relative">
           <div
             style={{
@@ -327,10 +323,7 @@ export default function NephroRX() {
                     MRI Scan
                   </label>
                   <label className="block border border-dashed border-[#8B7462]/20 p-8 text-center hover:border-[#8B7462]/40 transition-colors cursor-pointer">
-                    <Upload
-                      className="mx-auto mb-3 text-zinc-700"
-                      size={32}
-                    />
+                    <Upload className="mx-auto mb-3 text-zinc-700" size={32} />
                     <p className="text-zinc-600 mb-1 text-xs">
                       Upload scan file
                     </p>

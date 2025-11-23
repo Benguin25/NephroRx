@@ -6,7 +6,8 @@ import processing
 import calculations
 
 app = Flask(__name__)
-CORS(app)
+# Enable CORS for all domains on all routes
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
