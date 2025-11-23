@@ -7,7 +7,12 @@ import calculations
 
 app = Flask(__name__)
 # Enable CORS for all domains on all routes
-CORS(app, resources={r"/*": {"origins": "*"}})
+allowed_origins = [
+    "http://localhost:3000",
+    "https://www.nephrorx.app",
+    "https://nephrorx.app"
+]
+CORS(app, resources={r"/*": {"origins": allowed_origins}})
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
