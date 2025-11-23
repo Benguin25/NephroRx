@@ -83,7 +83,8 @@ export default function AnalysisPage() {
           <div className="bg-[#1a1a1a]/60 backdrop-blur-xl border border-white/5 p-6 rounded-2xl">
             <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Total Volume</p>
             <p className="text-4xl font-light text-white">
-              {result.volume_cm3} <span className="text-xl text-zinc-500">cm³</span>
+              {Number(result.volume_cm3).toFixed(2)}
+ <span className="text-xl text-zinc-500">cm³</span>
             </p>
           </div>
         </div>

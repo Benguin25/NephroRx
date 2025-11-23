@@ -66,7 +66,7 @@ def compute_curvature_variability(verts, faces):
 
 
 def process_seg_file(seg_path, creatinine_mg_dl):
-
+    
     img = nib.load(seg_path)
     data = img.get_fdata()
 
@@ -77,6 +77,7 @@ def process_seg_file(seg_path, creatinine_mg_dl):
         spacing = (1.0, 1.0, 1.0)
 
     # 2. Marching Cubes
+    # Generates vertices in real-world units (mm) due to spacing
     verts, faces, normals, values = measure.marching_cubes(
         data, 
         level=0.5, 
@@ -84,33 +85,43 @@ def process_seg_file(seg_path, creatinine_mg_dl):
         spacing=spacing
     )
 
-    # 3. Volume Calculation (Shoelace / Divergence)
+    # 3. Volume Calculation (Corrected Divergence Theorem)
+    # We use the signed volume of tetrahedrons method.
+    # Volume = sum( dot(p1, cross(p2, p3)) ) / 6.0
+    # This calculates the volume of the pyramid formed by the triangle and the origin (0,0,0).
+    # Since the mesh is closed, the internal volumes cancel out perfectly.
+    
     volume_mm3 = 0.0
     for face in faces:
-        v1 = verts[face[0]]
-        v2 = verts[face[1]]
-        v3 = verts[face[2]]
-        volume_mm3 += np.dot(v1, np.cross(v2, v3)) / 6.0
+        p1 = verts[face[0]]
+        p2 = verts[face[1]]
+        p3 = verts[face[2]]
+        
+        # Signed volume of tetrahedron from origin
+        # Note: You can also use dot(p1, cross(p2-p1, p3-p1)) / 6 for numerical stability if coords are huge
+        # but for this range, the standard origin method works well.
+        v_tet = np.dot(p1, np.cross(p2, p3)) / 6.0
+        volume_mm3 += v_tet
 
     # 4. Convert to cm3 (mL)
+    # CRITICAL: Take abs() at the very end. 
+    # If the mesh is "inside out" (winding order), the total volume will be negative.
+    # We just want the magnitude.
     vol_cm3 = abs(volume_mm3) / 1000.0
 
     # 5. Pharmacy Logic
     gfr_estimate = vol_cm3 * 0.8
-    safe_creatinine = max(float(creatinine_mg_dl), 0.5) # Prevent divide by zero
+    safe_creatinine = max(float(creatinine_mg_dl), 0.5) 
     creatinine_factor = 1 / safe_creatinine
     gfr_final = gfr_estimate * creatinine_factor
     dose_mg = 5 * (gfr_final + 25)
 
-    # --- THE FIX IS HERE ---
-    # We explicitly wrap numbers in float() to fix "Object of type float32 is not JSON serializable"
     return {
         "volume_cm3": float(round(vol_cm3, 2)),
         "gfr_final": float(round(gfr_final, 2)),
         "dose_mg": float(round(dose_mg, 2)),
         "creatinine": float(creatinine_mg_dl),
         "mesh": {
-            # flatten() makes it a 1D array [x,y,z, x,y,z], tolist() makes it Python list
             "vertices": verts.flatten().tolist(),
             "faces": faces.flatten().tolist()
         }
