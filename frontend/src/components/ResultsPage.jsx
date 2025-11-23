@@ -16,7 +16,7 @@ export default function ResultsPage() {
   const calculateDrugDose = async (drug) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/calculate-drug-dose', {
+      const response = await fetch('http://nephrorx.app/calculate-drug-dose', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,17 +44,11 @@ export default function ResultsPage() {
   };
 
   const drugs = [
+    "Cyclophosphamide",
     "Vancomycin",
-    "Aminoglycosides",
-    "DOACs",
-    "Metformin",
-    "Chemotherapy (cisplatin/carboplatin)",
-    "Digoxin",
-    "Gabapentin",
-    "Cephalosporins",
-    "Penicillins",
-    "Antivirals",
-    "Spironolactone"
+    "Amikacin",
+    "Enoxaparin",
+    "Ketamine"
   ];
 
   const filteredDrugs = drugs.filter(drug => 

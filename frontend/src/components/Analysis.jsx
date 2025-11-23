@@ -19,7 +19,7 @@ export default function AnalysisPage() {
 
     async function fetchStructural() {
       try {
-        const response = await fetch("http://localhost:5000/analyze_structural", {
+        const response = await fetch("http://nephrorx.app/analyze_structural", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
