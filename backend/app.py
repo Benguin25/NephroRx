@@ -6,13 +6,30 @@ import processing
 import calculations
 
 app = Flask(__name__)
-# Enable CORS for all domains on all routes
-allowed_origins = [
+# Explicit list of frontends that are allowed to talk to the API
+ALLOWED_ORIGINS = {
     "http://localhost:3000",
     "https://www.nephrorx.app",
-    "https://nephrorx.app"
-]
-CORS(app, resources={r"/*": {"origins": allowed_origins}})
+    "https://nephrorx.app",
+}
+
+CORS(app, resources={r"/*": {"origins": list(ALLOWED_ORIGINS)}}, supports_credentials=True)
+
+
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get("Origin")
+    if origin and origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = request.headers.get(
+            "Access-Control-Request-Headers", "Authorization,Content-Type"
+        )
+        response.headers.add("Vary", "Origin")
+    else:
+        response.headers.setdefault("Access-Control-Allow-Origin", "*")
+    return response
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
