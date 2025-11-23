@@ -7,11 +7,11 @@ name: Build and deploy Python app to Azure Web App - NephroRx
 on:
   push:
     branches:
-      - deploy
-  workflow_dispatch:
+      - deploy          # runs when you push to the 'deploy' branch
+  workflow_dispatch:    # allows manual runs from the Actions tab
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,42 +23,33 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Create venv and install dependencies
+      - name: Install dependencies and create deployment package
         working-directory: ./backend
         run: |
-          python -m venv antenv
-          source antenv/bin/activate
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-                
-      # By default, when you enable GitHub CI/CD integration through the Azure portal, the platform automatically sets the SCM_DO_BUILD_DURING_DEPLOYMENT application setting to true. This triggers the use of Oryx, a build engine that handles application compilation and dependency installation (e.g., pip install) directly on the platform during deployment. Hence, we exclude the antenv virtual environment directory from the deployment artifact to reduce the payload size. 
-      - name: Upload artifact for deployment jobs
+          # Create a zip of ONLY the backend folder contents
+          zip -r ../backend.zip .
+
+      - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: python-app
-          path: |
-            .
-            !antenv/
-
-      # 🚫 Opting Out of Oryx Build
-      # If you prefer to disable the Oryx build process during deployment, follow these steps:
-      # 1. Remove the SCM_DO_BUILD_DURING_DEPLOYMENT app setting from your Azure App Service Environment variables.
-      # 2. Refer to sample workflows for alternative deployment strategies: https://github.com/Azure/actions-workflow-samples/tree/master/AppService
-      
+          name: backend-package
+          path: backend.zip
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write    # required for azure/login OIDC
+      contents: read     # required for actions/checkout (not used here but fine)
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: python-app
-      
+          name: backend-package
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -66,11 +57,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_43FCA8F8F8014401A48C5322F6B45B80 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5E7D7323C5A44EAC83384B58CF2AF0FF }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'NephroRx'
+          app-name: 'NephroRx'        # your App Service name
           slot-name: 'Production'
-
-          
+          package: backend.zip        # the zip we built in the build job
