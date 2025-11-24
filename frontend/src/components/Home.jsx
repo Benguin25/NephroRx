@@ -16,6 +16,7 @@ export default function NephroRX() {
   });
   const [analyzing, setAnalyzing] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [resultData, setResultData] = useState(null);
   const canvasRef = useRef(null);
   const navigate = useNavigate();
 
@@ -50,18 +51,15 @@ export default function NephroRX() {
         const data = await response.json();
         console.log("Backend response:", data);
 
-        setTimeout(() => {
-          navigate("/results", { 
-            state: { 
-              result: data,
-              patientData: {
-                age: formData.age,
-                sex: formData.sex,
-                weight: formData.weight
-              }
-            } 
-          });
-        }, 100);
+        // Store result data and let ProcessingScreen handle navigation
+        setResultData({
+          result: data,
+          patientData: {
+            age: formData.age,
+            sex: formData.sex,
+            weight: formData.weight
+          }
+        });
       } else {
         console.error("Upload failed:", response.statusText);
         setIsProcessing(false);
@@ -78,9 +76,7 @@ export default function NephroRX() {
     }
   };
 
-  const handleProcessingComplete = () => {
-    setIsProcessing(false);
-  };
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -193,7 +189,7 @@ export default function NephroRX() {
   const titleOpacity = Math.max(0, 1 - scrolled / 500);
 
   if (isProcessing) {
-    return <ProcessingScreen onComplete={handleProcessingComplete} />;
+    return <ProcessingScreen resultData={resultData} navigate={navigate} />;
   }
 
   return (

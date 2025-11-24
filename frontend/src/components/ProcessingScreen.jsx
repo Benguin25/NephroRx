@@ -22,8 +22,10 @@ const ProgressStep = ({ label, status }) => {
   );
 };
 
-const ProcessingScreen = ({ onComplete }) => {
+const ProcessingScreen = ({ resultData, navigate }) => {
   const [analysisStage, setAnalysisStage] = useState(-1);
+  const [animationComplete, setAnimationComplete] = useState(false);
+  const hasNavigated = React.useRef(false);
 
   const stages = [
     { name: 'Image Processing', duration: 1000 },
@@ -31,6 +33,7 @@ const ProcessingScreen = ({ onComplete }) => {
     { name: 'Loading 3D Model', duration: 2500 }
   ];
 
+  // Animation effect - runs only once on mount
   useEffect(() => {
     const totalDuration = stages.reduce((sum, stage) => sum + stage.duration, 0);
     let elapsed = 0;
@@ -54,14 +57,23 @@ const ProcessingScreen = ({ onComplete }) => {
       
       setAnalysisStage(newStage);
       
+      // Mark animation as complete
       if (elapsed >= totalDuration + 500) {
         clearInterval(timer);
-        onComplete();
+        setAnimationComplete(true);
       }
     }, 50);
 
     return () => clearInterval(timer);
-  }, [onComplete]);
+  }, []); // Empty dependency array - run only once
+
+  // Navigation effect - triggers when both animation is done and data is ready
+  useEffect(() => {
+    if (animationComplete && resultData && navigate && !hasNavigated.current) {
+      hasNavigated.current = true;
+      navigate("/results", { state: resultData });
+    }
+  }, [animationComplete, resultData, navigate]);
 
   return (
     <div className="processing-screen">

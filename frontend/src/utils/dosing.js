@@ -73,10 +73,11 @@ export const DRUG_CONFIGS = [
 /**
  * Calculate TKV_exp (Expected Total Kidney Volume)
  * Formula: TKV_exp = Base × SexF × AgeF × WtF
+ * Note: Base values are for BOTH kidneys (total kidney volume)
  */
 function calculateTKVExpected(patient) {
-  // Base value
-  const base = patient.sex === "male" ? 170 : 150; // mL
+  // Base value for BOTH kidneys (340 mL for males, 300 mL for females)
+  const base = patient.sex === "male" ? 340 : 300; // mL
 
   // Sex factor
   const sexF = patient.sex === "male" ? 1.0 : 0.90;
@@ -141,8 +142,8 @@ export function calculateDoseForDrug(drug, patient) {
   // Step 1: Calculate standard dose based on weight
   const doseStdMg = calculateStandardDose(drug, patient);
 
-  // Step 2: Calculate expected TKV
-  const base = patient.sex === "male" ? 170 : 150;
+  // Step 2: Calculate expected TKV (for BOTH kidneys)
+  const base = patient.sex === "male" ? 340 : 300;
   const sexF = patient.sex === "male" ? 1.0 : 0.90;
   const ageF = 1 - Math.max(0, patient.age - 40) * 0.01;
   const wtF = 1 + 0.003 * (patient.weightKg - 70);
