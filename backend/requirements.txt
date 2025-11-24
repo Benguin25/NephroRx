@@ -15,9 +15,10 @@ pillow==10.3.0           # **UPDATED**: Pinning to a widely available recent ver
 pydicom==3.0.1
 scikit-image==0.25.2
 scipy>=1.14.0,<2.0.0     # **UPDATED**: Relaxed constraint for broad NumPy compatibility
-tifffile==2025.10.16
+tifffile==2025.5.10
 Werkzeug==3.1.3
 trimesh==4.3.0
 nibabel
 dicom2nifti
 gunicorn
+
